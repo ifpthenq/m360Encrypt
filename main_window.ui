@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>823</width>
+    <height>641</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AH Encrypt</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButtonPublicKeySelect">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>120</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>This should be a key your partner sends to you. Its used to encrypt messages that only they can decrypt.</string>
+    </property>
+    <property name="text">
+     <string>Public Key (theirs)</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonPrivateKeySelect">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>360</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>This is a keep you keep secret. Its used to decrypt messages your partner encrypts with your public key. </string>
+    </property>
+    <property name="text">
+     <string>Private Key (yours)</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEncrypt">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>120</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Encrypt</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonDecrypt">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>120</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Decrypt</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditPublicKey">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>160</y>
+      <width>281</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditPrivateKey">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>400</y>
+      <width>281</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditEncrypt">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>160</y>
+      <width>371</width>
+      <height>421</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>MS PGothic</family>
+      <pointsize>24</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>AH Encrypt</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Version 1.0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>90</y>
+      <width>271</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="text">
+     <string>Select the public key you will use to Encrypt messages</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>340</y>
+      <width>281</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select the private key you will use to Decrypt messages</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>80</y>
+      <width>361</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Paste message here to be encrypted or decrypted</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>823</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuActions">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionInstructions"/>
+    <addaction name="actionGenerate_New_Key_Pair"/>
+   </widget>
+   <addaction name="menuActions"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionGenerate_New_Key_Pair">
+   <property name="text">
+    <string>Generate New Key Pair</string>
+   </property>
+  </action>
+  <action name="actionInstructions">
+   <property name="text">
+    <string>Instructions</string>
+   </property>
+   <property name="toolTip">
+    <string>How do I use this program?</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionRandomThing">
+   <property name="text">
+    <string>RandomThing</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButtonPublicKeySelect</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setPublicKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonPrivateKeySelect</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setPrivateKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>391</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>211</x>
+     <y>388</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonEncrypt</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>encryptMainWindo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>476</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>145</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonDecrypt</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>decryptMainWindo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>664</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>757</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>setPublicKey()</slot>
+  <slot>setPrivateKey()</slot>
+  <slot>encryptMainWindo()</slot>
+  <slot>decryptMainWindo()</slot>
+ </slots>
+</ui>

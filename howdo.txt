@@ -1,0 +1,8 @@
+>> pyrcc5 resources.qrc -o resources_rc.py
+to compile resource file
+
+>> pyuic5 -o m360Encrypt_ui.py m360Encrypt.ui
+
+-- to build the executable
+-- >> Scripts\pyinstaller --onefile Encrypt\ahEncrypt.py
+-- trying without --onefile this time. 
