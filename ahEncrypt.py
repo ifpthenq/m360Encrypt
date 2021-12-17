@@ -10,6 +10,7 @@ from Crypto import Random
 import urllib.parse
 import base64
 import ctypes
+from PyQt5 import QtCore
 
 
 from PyQt5.QtWidgets import (
@@ -25,13 +26,13 @@ from instruction_window_ui  import Ui_InstructionWindow
 
 class instructionWindow(QMainWindow, Ui_InstructionWindow):
     def __init__(self, parent=None):
-        print("dbg: init Instructions")
+       #print("dbg: init Instructions")
         super().__init__(parent)
         self.setupUi(self)
         self.textEdit.setText("test")
 class genKeys(QMainWindow, Ui_GenKeysWindow):
     def __init__(self, parent):
-        print("dbg: init genKeysWindow")
+        #print("dbg: init genKeysWindow")
         
         super().__init__(parent)
         
@@ -45,7 +46,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         #print("dbg: stringPath is {}".format(pathpath))
         
     def browseFiles(self):
-        print("dbg: yes i do have a browsefiles()")
+        #print("dbg: yes i do have a browsefiles()")
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.Directory)
         #self.lineEditFileLocation = ""
@@ -63,7 +64,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         
         
     def generateKeys(self): 
-        print("dbg: now i have a generate keys()")
+        #print("dbg: now i have a generate keys()")
         ctypes.windll.user32.MessageBoxW(0, 'This will cause the program to freeze \n for a couple of minutes' , 'Warning', 0)
         doSaveFiles = self.checkBox.isChecked()
         doLoadPrivateKey = self.checkBox_2.isChecked()
@@ -101,7 +102,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
                 ctypes.windll.user32.MessageBoxW(0, 'Successfully wrote files' , 'Files Created', 0)
             
             except Exception as e:
-                ctypes.windll.user32.MessageBoxW(0, e , 'Error', 0)
+                ctypes.windll.user32.MessageBoxW(0, str(e) , 'Error', 0)
         
         
         if(doLoadPrivateKey):
@@ -112,33 +113,10 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
        
         if(doLoadPublicKey or doLoadPrivateKey):
             self.parenty.loadKeys()
-        #self.keys = ahCrypto()
-        #self.keys.generateKeyPair()
         
-        #reset path, incase someone just typed it in and hit generate
-        #stringPath = self.lineEditFileLocation.text()
-        #pathpath = '/'.join(stringPath.split('\\'))
-        #self.save_folder = Path(pathpath)
-        
-        
-        #private_key_fname = (os.path.join(self.save_folder, "private_key.txt"))
-        #public_key_fname = (os.path.join(self.save_folder, "public_key.txt"))
-       # print("dbg: in genkeys and save folder is : {} / {}".format(type(self.save_folder), self.save_folder))
-       # with open(private_key_fname, 'w') as write_file:
-        #    print("dbg: Writing private key")
-         #   write_file.write(str(self.keys.private_key))
-          #  write_file.close()
-        #with open(public_key_fname, 'w') as write_file:
-         #   print("dbg: Writing public key")
-          #  write_file.write(str(self.keys.public_key))
-           # write_file.close()
-           
-        #here we're sending in the keys not the serialized key bytes
-        #self.keys.save_file_private(self.keys.private_key, private_key_fname)
-        #self.keys.save_file_public(self.keys.public_key, public_key_fname)
         self.close()
     def enableGenBrowseFiles(self):
-        print("dBG: enableGenBrowseFiles")
+        #print("dBG: enableGenBrowseFiles")
         if self.checkBox.isChecked():
             self.pushButtonBrowse.setEnabled(True)
             self.label.setEnabled(True)
@@ -193,7 +171,7 @@ class Window(QMainWindow, Ui_MainWindow):
         #self.actionGenerate_New_Key_Pair.triggered.connect(self.genKeyPair)
        
     def messageDecrypt(self):
-        print("DBG: messageDecrypt()")
+        #print("DBG: messageDecrypt()")
         #check if password is empty
         if len(self.lineEdit_2.text()) < 1:
             self.popError('Error', 'Password cannot be blank', 0)
@@ -217,7 +195,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.textEdit_7.setText(str(decoded))
             
     def messageEncrypt(self):
-        print("DBG: messageEncrypt()")
+        #print("DBG: messageEncrypt()")
         #check if password is empty
         if len(self.lineEdit_2.text()) < 1:
             self.popError('Error', 'Password cannot be blank', 0)
@@ -225,7 +203,7 @@ class Window(QMainWindow, Ui_MainWindow):
         sharedPassword = self.lineEdit_2.text()
         #first check if shared password exists
         if self.sharedPassword and (self.sharedPassword != "No PW set"):
-            print("DBG: beginning encrypt message")
+            #print("DBG: beginning encrypt message")
             key = self.sharedPassword.encode()
             source = self.textEdit_7.toPlainText().encode()
             key = SHA256.new(key).digest()
@@ -239,15 +217,15 @@ class Window(QMainWindow, Ui_MainWindow):
             
         
     def loadSharedPassword(self):
-        print("DBG: loadSharedPassword()")
+        #print("DBG: loadSharedPassword()")
         self.sharedPassword = self.textEdit_4.toPlainText()
         self.statuspassloaded.setText("Yes")
     def loadSharedPasswordDec(self):
-        print("DBG: loadSharedPassword()") 
+        #print("DBG: loadSharedPassword()") 
         
         self.sharedPassword = self.textEdit_6.toPlainText()
         self.statuspassloaded.setText("Yes")
-        print("DBG: self.sharedPassword here is {}".format(self.sharedPassword))
+        #print("DBG: self.sharedPassword here is {}".format(self.sharedPassword))
     def RSADecrypt(self):
         try:
             #check that private key is loaded
@@ -255,7 +233,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.popError('Error', 'You must load a private key \n before you can decrypt a passphrase.', 0)
                 return None
     
-            print("DBG: RSADecrypt()")
+            #print("DBG: RSADecrypt()")
             rsa_object = PKCS1_v1_5.new(self.private_key)
             #print("DBG: starting decrypt")
             encrypt_byteAsString = self.textEdit_4.toPlainText()
@@ -287,7 +265,7 @@ class Window(QMainWindow, Ui_MainWindow):
     
     def RSAEncrypt(self):
         try: 
-            print("DBG: RSAEncrypt()")
+            #print("DBG: RSAEncrypt()")
             check = self.lineEdit_3.text()
             #check if public key is loaded
             if not self.public_key_loaded:
@@ -324,7 +302,7 @@ class Window(QMainWindow, Ui_MainWindow):
             else:
                 self.popError('Error', 'There\'s something wrong with the password you selected. Try a different one', 0)
     def loadKeys(self):
-        print("DBG: loadKeys")
+        #print("DBG: loadKeys")
         #this function takes whatever is in the window
         #turns it into keys, and loads them into globals
         
@@ -364,7 +342,7 @@ class Window(QMainWindow, Ui_MainWindow):
         #print(checkString)
           
     def selectPublicKey(self):
-        print("DBG: selectPublicKey")
+        #print("DBG: selectPublicKey")
         pkeyFile = QFileDialog.getOpenFileName(self, 'Select Public Key',
                    'c:\\')
         public_key_path = pkeyFile[0]
@@ -381,14 +359,15 @@ class Window(QMainWindow, Ui_MainWindow):
         except FileNotFoundError as f:
             self.popError('Error', 'No file selected', 0)
     def savePassword(self):
-        print("DBG: savePassword")
+        #print("DBG: savePassword")
+        return None
     def generateKeyPair(self):
-        print("DBG: generateKeyPair")
+        #print("DBG: generateKeyPair")
          #self.dialog.show()
         self.dialog = genKeys(self)
         self.dialog.show()
     def selectPrivateKey(self):
-        print("DBG: selectPrivateKey")
+        #print("DBG: selectPrivateKey")
         pkeyFile = QFileDialog.getOpenFileName(self, 'Select Private Key',
                    'c:\\')
         private_key_path = pkeyFile[0]
@@ -416,7 +395,7 @@ class Window(QMainWindow, Ui_MainWindow):
         ##  6 : Cancel | Try Again | Continue
         return ctypes.windll.user32.MessageBoxW(0, text, title, style)
     def notesDecrypt(self):
-        print("DBG: notesDecrypt")
+        #print("DBG: notesDecrypt")
         #check password is not blank
         if (len(self.lineEdit.text()) < 1):
             self.popError('Error', 'Password cannot be blank', 0)
@@ -442,11 +421,11 @@ class Window(QMainWindow, Ui_MainWindow):
             self.textEdit_9.setText(str(decoded))
         except Exception as e:
             self.popError('Error', 'Unable to decrypt note with given password', 0)
-            print(e)
+            #print(e)
         
         
     def loadEncryptedFile(self):
-        print("DBG: loadEncryptedFile()")
+        #print("DBG: loadEncryptedFile()")
         try:
             filename = QFileDialog.getOpenFileName(self, 'Open File')
             file = open(filename[0], 'r')
@@ -455,28 +434,28 @@ class Window(QMainWindow, Ui_MainWindow):
         except:
             return None
     def revealNotesPW(self):
-        print("DBG: revealNotesPW")
+        #print("DBG: revealNotesPW")
         currentState = self.lineEdit.echoMode()
         if (currentState == 2):
             self.lineEdit.setEchoMode(0)
         else:
             self.lineEdit.setEchoMode(2)
     def revealPWSender(self):
-        print("DBG: revealPWSender")
+        #print("DBG: revealPWSender")
         currentState = self.lineEdit_3.echoMode()
         if (currentState == 2):
             self.lineEdit_3.setEchoMode(0)
         else:
             self.lineEdit_3.setEchoMode(2)
     def revealPSReceiver(self):
-        print("DBG: revealPWReceiver")
+        #print("DBG: revealPWReceiver")
         currentState = self.lineEdit_5.echoMode()
         if (currentState == 2):
             self.lineEdit_5.setEchoMode(0)
         else:
             self.lineEdit_5.setEchoMode(2)
     def revealPWMessage(self):
-        print("DBG: revealPWMessage")
+        #print("DBG: revealPWMessage")
         currentState = self.lineEdit_2.echoMode()
         if (currentState == 2):
             self.lineEdit_2.setEchoMode(0)
@@ -516,90 +495,20 @@ class Window(QMainWindow, Ui_MainWindow):
             self.popError('Success', 'Successfully saved encrypted file',0)
         except Exception as e:
             self.popError('Error', str(e), 0)
-        print("DBG: encryptAndSave")
-    def browseFiles(self):
-        print("DBG: browseFiles")
+        #print("DBG: encryptAndSave")
+    
       
  
         
     
     
-    def old_genKeyPair(self):
-        #get a file location
-        
-        print("dbg: genkeypair")
-        #self.dialog.show()
-        self.dialog = genKeys(self)
-        self.dialog.show()
-        
-        com='''
-        
-        '''
-    def old_displayInstructions(self):
-        self.dialog2 = instructionWindow(self)
-        self.dialog2.show()
-        
-    def old_setPublicKey(self):
-        print("set public key button pressed")
-        pkeyFile = QFileDialog.getOpenFileName(self, 'Select Public Key',
-                    'c:\\')
-        #pkeyFile.setFileMode(QRileDialog.AnyFile)
-        #pkeyFile.setFilter("Text Files (*.txt)")
-        self.public_key = pkeyFile[0]
-        filename = pkeyFile[0]
-        print(filename)
-        try:
-            with open(filename, 'r', encoding='utf-8') as kFile:
-                lines = kFile.readlines()
-                print(lines)
-                print("I just printed the file")
-                self.textEditPublicKey.clear()
-                self.textEditPublicKey.append("Loading Key File: {}".format(str(filename)))
-                for line in lines:
-                    self.textEditPublicKey.append(line)
-            print("dbg: Line 144 - trying to load from file")
-            self.loadedPublicKey = self.mainAhCrypto.load_key_public(filename)
-            #test
-            
-            print("dbg: I just set loadedPublicKey. Type  is {}".format(type(self.loadedPublicKey)))
-        except Exception as e:
-            print(e)
-    
-    def old_setPrivateKey(self):
-        print("dbg: setPrivateKey")
-        pkeyFile = QFileDialog.getOpenFileName(self, 'Select Private Key',
-                   'c:\\')
-        #this is the text version of the key for displaying
-        self.private_key = pkeyFile[0]
-        filename = pkeyFile[0]
-        try: 
-            with open(filename, 'r', encoding='utf-8') as kFile:
-                lines = kFile.readlines()
-                self.textEditPrivateKey.clear()
-                self.textEditPrivateKey.append("Loading Key File: {}".format(str(filename)))
-                for line in lines:
-                    self.textEditPrivateKey.append(line)
-            #this is the bytes version of the key
-            self.loadedPrivateKey = self.mainAhCrypto.load_key_private(filename)
-            print("DBG: I HAVE LOADED THE PRIVATE KEY AND IT IS A {}".format(type(self.loadedPrivateKey)))
-         
-        except Exception as e:
-            print(e)
-        
-    def old_encryptMainWindo(self):
-        print("dbg: encryptMainWindo")
-        
-        encryptedMessage = self.mainAhCrypto.encrypt(self.loadedPublicKey, self.textEditEncrypt.toPlainText())
-        self.textEditEncrypt.setText(str(encryptedMessage))
-        
-    def old_decryptMainWindo(self):
-        print("dbg: decryptMainWindo")
-        
-        decryptedMessage = self.mainAhCrypto.decrypt(self.loadedPrivateKey, self.textEditEncrypt.toPlainText())
-        self.textEditEncrypt.setText(str(decryptedMessage))
+  
         
 if __name__ == "__main__":
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = QApplication(sys.argv)
+    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
     win = Window()
     #generate = genKeys()
     #this.generateWindow = generate
