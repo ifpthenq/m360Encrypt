@@ -6,3 +6,10 @@ to compile resource file
 -- to build the executable
 -- >> Scripts\pyinstaller --onefile Encrypt\ahEncrypt.py
 -- trying without --onefile this time. 
+
+>> git add .
+
+>> git commit -m "some commit message"
+
+>> git push origin master
+

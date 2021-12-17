@@ -64,35 +64,44 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         
     def generateKeys(self): 
         print("dbg: now i have a generate keys()")
-        self.label_6.setText("** Working")
+        ctypes.windll.user32.MessageBoxW(0, 'This will cause the program to freeze \n for a couple of minutes' , 'Warning', 0)
         doSaveFiles = self.checkBox.isChecked()
         doLoadPrivateKey = self.checkBox_2.isChecked()
         doLoadPublicKey = self.checkBox_3.isChecked()
+        doSaveSSH = self.checkBox_4.isChecked()
         
         filePrefix = self.filenamePrefix.text()
         pubFile = os.path.join(self.save_folder, filePrefix + "_public_key.PEM")
+        pubSSH = os.path.join(self.save_folder, filePrefix + "_pub_id_rsa.pub")
         privFile = os.path.join(self.save_folder, filePrefix + "_private_key.PEM")
+        #privSSH = os.path.join(self.save_folder, filePrefix + "_priv_id_rsa")
+        
         key_pair = RSA.generate(2048)
-        pubkey = key_pair.publickey()
+        #pubkey = key_pair.publickey()
         
         if(doSaveFiles):
             try:
                 with open(privFile, "wb") as f:
 
                     f.write(key_pair.exportKey('PEM'))
-                    f.close()
+                f.close()
                 
+                        
                 pubkey = key_pair.publickey()
             
                 with open(pubFile,"wb") as f:
-                    f.write(pubkey.exportKey('OpenSSH'))
-                    f.close()
+                    f.write(pubkey.exportKey('PEM'))
+                f.close()
+                    
+                if(doSaveSSH):
+                    with open(pubSSH, "wb") as f2:
+                        f2.write(pubkey.exportKey('OpenSSH'))
+                    f2.close()
              
-             
-                ctypes.windll.user32.MessageBoxW(0, 'Files Created' , 'Successfully wrote files', 0)
+                ctypes.windll.user32.MessageBoxW(0, 'Successfully wrote files' , 'Files Created', 0)
             
             except Exception as e:
-                popError('Error', e, 0)
+                ctypes.windll.user32.MessageBoxW(0, e , 'Error', 0)
         
         
         if(doLoadPrivateKey):
@@ -100,7 +109,10 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
             
         if(doLoadPublicKey):
             self.parenty.textEdit_3.setText(pubkey.exportKey('PEM').decode())
-       #self.keys = ahCrypto()
+       
+        if(doLoadPublicKey or doLoadPrivateKey):
+            self.parenty.loadKeys()
+        #self.keys = ahCrypto()
         #self.keys.generateKeyPair()
         
         #reset path, incase someone just typed it in and hit generate
@@ -133,12 +145,17 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
             self.lineEditFileLocation.setEnabled(True)
             self.label_5.setEnabled(True)
             self.filenamePrefix.setEnabled(True)
+            self.checkBox_4.setEnabled(True)
+            self.label_7.setEnabled(True)
+            
         else:
             self.pushButtonBrowse.setEnabled(False)
             self.label.setEnabled(False)
             self.lineEditFileLocation.setEnabled(False)
             self.label_5.setEnabled(False)
             self.filenamePrefix.setEnabled(False)
+            self.checkBox_4.setEnabled(False)
+            self.label_7.setEnabled(False)
     
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -232,25 +249,26 @@ class Window(QMainWindow, Ui_MainWindow):
         self.statuspassloaded.setText("Yes")
         print("DBG: self.sharedPassword here is {}".format(self.sharedPassword))
     def RSADecrypt(self):
-        #check that private key is loaded
-        if not self.private_key_loaded:
-            self.popError('Error', 'You must load a private key \n before you can decrypt a passphrase.', 0)
-            return None
+        try:
+            #check that private key is loaded
+            if not self.private_key_loaded:
+                self.popError('Error', 'You must load a private key \n before you can decrypt a passphrase.', 0)
+                return None
     
-        print("DBG: RSADecrypt()")
-        rsa_object = PKCS1_v1_5.new(self.private_key)
-        #print("DBG: starting decrypt")
-        encrypt_byteAsString = self.textEdit_4.toPlainText()
-        #encrypt_byteAsHex = ''.join([str(hex(ord(i)))[2:4] for i in encrypt_byteAsString])
+            print("DBG: RSADecrypt()")
+            rsa_object = PKCS1_v1_5.new(self.private_key)
+            #print("DBG: starting decrypt")
+            encrypt_byteAsString = self.textEdit_4.toPlainText()
+            #encrypt_byteAsHex = ''.join([str(hex(ord(i)))[2:4] for i in encrypt_byteAsString])
         
-        encrypt_byteAsBytes = bytes.fromhex(encrypt_byteAsString)
-        encrypt_byte = encrypt_byteAsBytes
-        allowed_length = 1024
-        my_length = len(encrypt_byte)
-        if my_length < allowed_length:
-            decipher_text = rsa_object.decrypt(encrypt_byte, "failure")
-            self.lineEdit_5.setText(decipher_text.decode())
-        else: 
+            encrypt_byteAsBytes = bytes.fromhex(encrypt_byteAsString)
+            encrypt_byte = encrypt_byteAsBytes
+            allowed_length = 1024
+            my_length = len(encrypt_byte)
+            if my_length < allowed_length:
+                decipher_text = rsa_object.decrypt(encrypt_byte, "failure")
+                self.lineEdit_5.setText(decipher_text.decode())
+            else: 
             #offset = 0
             #res = []
             #while my_length - offset > 0:
@@ -260,8 +278,11 @@ class Window(QMainWindow, Ui_MainWindow):
             #        res.append(rsa_object.decrypt(encrypt_byte[offset:], 'failure'))
             #    offset += allowed_length
             #decrypt_byte = b''.join(res)
-            self.popError('Error', 'The text your trying to decrypt \n exceeds the maximum length \n for a password', 0)
-            
+                self.popError('Error', 'The text your trying to decrypt \n exceeds the maximum length \n for a password', 0)
+        except ValueError as ve:
+            self.popError('Error', 'This text is not a valid cipher', 0)
+        except Exception as e:
+            self.popError('Error', 'Cannot decrypt this with the private \n key you have loaded', 0)
     
     
     def RSAEncrypt(self):
