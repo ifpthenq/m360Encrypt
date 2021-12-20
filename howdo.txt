@@ -13,3 +13,5 @@ to compile resource file
 
 >> git push origin master
 
+>> pyuic5 -o funky_screen_ui.py funky_screen.ui
+>> pip install qdarkstyle

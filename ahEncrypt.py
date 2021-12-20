@@ -11,6 +11,14 @@ import urllib.parse
 import base64
 import ctypes
 from PyQt5 import QtCore
+from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import * 
+
+from PyQt5.QtWidgets import QApplication
+
+
+from win32api import GetSystemMetrics
 
 
 from PyQt5.QtWidgets import (
@@ -18,6 +26,9 @@ from PyQt5.QtWidgets import (
 )
 
 from PyQt5.uic import loadUi
+
+from funky_screen_ui import Ui_MainWindow as funky_MainWindow
+from fw import FunkyWindow
 
 from m360Encrypt_ui import Ui_MainWindow
 #from main_window_ui import Ui_MainWindow
@@ -137,7 +148,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
     
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super(Window, self).__init__(parent)
         #call setupUi in your ui file
         self.setupUi(self) 
         #call your event handler function
@@ -150,19 +161,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sharedPassword = "No PW Set"
         self.public_key_loaded = False
         self.private_key_loaded = False
-        #self.dialog = genKeys(self)
-        #bc1qndzd3fdyjzklvefxz9rch6rk7wnep9t87440tq
-        #bc: bc1qndzd3fdyjzklvefxz9rch6rk7wnep9t87440tq
-        #eth: 0x5f879Ef9D9680675A51110DD231481faBdd32d6b
-        #eth: 0x5f879Ef9D9680675A51110DD231481faBdd32d6b
-        #dg: DF7Yq9nayLb34ctEAcQT5TCuDvyVT1dSqy
-        #dg: DF7Yq9nayLb34ctEAcQT5TCuDvyVT1dSqy
+        #set layout
+        screenWidth = GetSystemMetrics(0)
+        screenHeight = GetSystemMetrics(1)
+        print("DBG: res: {} x {}".format(screenWidth, screenHeight))
+        if (screenWidth / screenHeight) < 1.7:
+           print("DBG: not working")
+      
         
-        #self.dialog.show()
-        #self.keys = ahCrypto()
-        #test = self.keys.generateKeyPair()
-        #print(self.keys.private_key)
-        
+            
     def connectSignalsSlots(self):
     #all of your event listeners go in here
         #self.action_Exit.triggered.connect(self.close)
@@ -505,13 +512,52 @@ class Window(QMainWindow, Ui_MainWindow):
   
         
 if __name__ == "__main__":
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0.5"
+    
+    
+    #os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
+    #QApplication.setAttribute(QtCore.Qt.AA_Use96Dpi)
+    #QApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     app = QApplication(sys.argv)
-    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    app.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
-    win = Window()
-    #generate = genKeys()
-    #this.generateWindow = generate
-    win.show()
+    #app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    #app.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+    #app.setAttribute(QtCore.Qt.AA_Use96Dpi)
+    QApplication.setStyle("Fusion")
+    #
+    
+    dark_palette = QPalette()
+    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.WindowText, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.Base, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
+    dark_palette.setColor(QPalette.ToolTipText, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.Text, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ButtonText, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.BrightText, QtCore.Qt.red)
+    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, QtCore.Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.WindowText, QtCore.Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.Text, QtCore.Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
+    QApplication.setPalette(dark_palette)
+    screenWidth = GetSystemMetrics(0)
+    screenHeight = GetSystemMetrics(1)
+    print("DBG: res: {} x {}".format(screenWidth, screenHeight))
+    if (screenWidth / screenHeight) < 1.7:
+        print ("this is a funky screen size. changing UI to fit")
+             
+        fwin = FunkyWindow()
+        fwin.show()
+        #win = Window()
+        #win.show()
+    else:
+        fwin = FunkyWindow()
+        fwin.show()
+        #win = Window()
+        #win.show()
     #generate.show()
     sys.exit(app.exec())
