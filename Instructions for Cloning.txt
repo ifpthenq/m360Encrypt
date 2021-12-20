@@ -1,0 +1,96 @@
+####################################
+   Set up your Python Environment
+####################################
+- Install python, but not the latest python. I'm using 3.9.8 and it works well
+- For me python installed to Program Files\Python39 - so this my python install folder. 
+- Test your python installation by typing this in your cmd window
+   >>  python --version
+   
+## Create  a virtual python environment for this project
+- create a new directory. Mine is C:\Dev\m360Encrypt
+- cd to this directory in your cmd window
+- type this: 
+  >>  python -m venv .venv
+- this puts a .venv file in the directory and fills it with the vitural environment
+- activate the venv by running the activate script
+  >>  python Scripts\activate
+  -- NOTE: You only have to include the word "python" if .py files aren't automaticall
+          associated with python. On my laptop its >> Scripts\activate, on my other 
+		  computer its  >> python Scripts\activat
+- you should now see (.venv) in front of your PWD and prompt in the cmd window
+  i.e. :    (.venv) c:\Dev\m360Encrypt\m360Encrypt>
+
+##	Install Visual Studio Community Ed
+  -- NOTE: You only need this for the C++ compiler. You can technically use
+		any c++ compiler,or, just use the build tools, but trust me - it is WAY easier
+		to just install Visual Studio Community Ed for c++. With this installed, all of the
+		python libraries install very easily. I learned this the hard way. 
+
+## Add all the python libraries you're going to need
+>> pip install pycryptodome
+>> pip install pyinstaller
+>> pip install pypiwin32
+>> pip install pywin32
+>> pip install pyqt5
+>> pip install QtPy
+
+## Python QT Designer
+- To make any changes to the GUI you will also need to download and install 
+the python Qt Designer software from here:
+https://build-system.fman.io/qt-designer-download
+
+#####################################
+    Clone the Repo
+#####################################
+- Install git (be sure to select that you want to use the OS cmd window for terminal)
+- I did mine from C:\Dev\m360Encrypt
+   >>  git clone https:\\github.com\ifpthenq\m360Encrypt
+   -- NOTE: this *should* create a subfolder (also called m360Encrypt) and download
+        all of the project files to it
+		the .git is in the subfolder, so you'll want to cd to the new m360Encrypt subfolder
+- >>  git checkout master
+   -- probably don't need to do this, because it should be the default branch	
+- from here, you can run the program from the script with 
+  >> python ahEncrypt.py
+- or you can run it from the last compiled executable which is in the dist folder
+
+######################################
+     Making changes to your local copy
+######################################
+- To alter the UI or any of the images open the m360Encrypt.ui file in QT Designer. 
+- save any changes 
+- then from the cmd window type
+>>  pyrcc5 resources.qrc -o resources_rc.py
+   -- this recompiles the resource file that contains all of the images
+   
+>>  pyuic5 -o m360Encrypt_ui.py m360Encrypt.ui
+   -- this recompiles the UI file to include your "widget" changes
+   
+#####################################
+     Commiting your changes to Git
+#####################################
+- Github no longer allows password access. The easiest way now is to log into github via a browser
+   under your name, go to Settings, Deveoper Settings, and create a Personal Access Token
+   give it every permission and set it not to expire for a good while (mine are set to 30 days)
+   make sure to copy it to a text file, because you can't recover it
+- if you haven't already, set up your email and name
+>> git config --global user.email "angie.c.hall@gmail.com"
+>> git config --global user.name "Angela Hall"
+
+To commit:
+>> git add .
+   - adds all of the files you've changed
+>> git commit -m "your commit message"
+   - commits them locally 
+>> git push origin master
+- You'll be prompted to either use "code" or browser to log in - choose browser
+- in the browser you'll be prompted for username and password (but they're depricated so they won't work)
+- There will be a tab that says "token" instead of password - use that and use your personal access token. 
+
+####################################
+   Syncing your local repo from Github
+####################################
+>> git fetch origin --prune
+  
+
+   
