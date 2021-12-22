@@ -14,8 +14,9 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QPalette
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import * 
-
+from Labels import Labels
 from PyQt5.QtWidgets import QApplication
+from howToGuide import howToGuide
 
 
 from win32api import GetSystemMetrics
@@ -148,7 +149,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
     
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
-        super(Window, self).__init__(parent)
+        super().__init__(parent)
         #call setupUi in your ui file
         self.setupUi(self) 
         #call your event handler function
@@ -161,15 +162,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sharedPassword = "No PW Set"
         self.public_key_loaded = False
         self.private_key_loaded = False
-        #set layout
         screenWidth = GetSystemMetrics(0)
         screenHeight = GetSystemMetrics(1)
-        print("DBG: res: {} x {}".format(screenWidth, screenHeight))
-        if (screenWidth / screenHeight) < 1.7:
-           print("DBG: not working")
-      
-        
-            
+        print("DBG: This is funky window")
+        self.labels = Labels() 
+        self.howTos = howToGuide()
+        self.howToSize = 9
+        self.selectHowTo()
+        self.toggleDPI = 0
     def connectSignalsSlots(self):
     #all of your event listeners go in here
         #self.action_Exit.triggered.connect(self.close)
@@ -504,12 +504,75 @@ class Window(QMainWindow, Ui_MainWindow):
             self.popError('Error', str(e), 0)
         #print("DBG: encryptAndSave")
     
-      
- 
+    def useHighDPI(self):
+        #print("DBG: USe High DPI")
+        self.label_15.setText(self.labels.loadKeyPairMain(8,8))
+        self.textEdit_8.setHtml(self.labels.setFaq(8, 8,6))
+        self.textEdit_5.setHtml(self.labels.setBitcoin(7.25))
+        self.label_17.setText(self.labels.setLabel17(7))
+        self.label_18.setText(self.labels.setLabel18(7))
+        self.label_3.setText(self.labels.setLabel3(7))
+        self.label_10.setText(self.labels.setLabel10(7))
+        self.label_11.setText(self.labels.setLabel11(7))
+        self.label_19.setText(self.labels.setLabel19(10, 7))
+        self.label_23.setText(self.labels.setLabel23(7))
+        self.label_33.setText(self.labels.setLabel33(7))
+        self.label_34.setText(self.labels.setLabel34(7))
+        self.howToSize = 7
+        self.selectHowTo()
+        self.toggleDPI = 1
+    def useLowDPI(self):
+        #print("DBG: Use Low DPI") 
+        if(self.toggleDPI):
+            #self.textEdit_5.setHtml(self.labels.loadKeyPairMain(10,10))
+            self.label_15.setText(self.labels.loadKeyPairMain(10,10))
+            self.textEdit_8.setHtml(self.labels.setFaq(10,10, 8))
+            self.textEdit_5.setHtml(self.labels.setBitcoin(8.25))
+            self.label_17.setText(self.labels.setLabel17(9))
+            self.label_18.setText(self.labels.setLabel18(9))
+            self.label_3.setText(self.labels.setLabel3(9))
+            self.label_10.setText(self.labels.setLabel10(9))
+            self.label_11.setText(self.labels.setLabel11(9))
+            self.label_19.setText(self.labels.setLabel19(12, 9))
+            self.label_23.setText(self.labels.setLabel23(9))
+            self.label_33.setText(self.labels.setLabel33(9))
+            self.label_34.setText(self.labels.setLabel34(9))
+            self.howToSize = 9
+            self.selectHowTo()
+            self.toggleDPI = 0
+        else:
+            self.useHighDPI()
+            
         
-    
-    
-  
+    def selectHowTo(self):
+        soptions = []
+        selectedIndex = self.comboBox.currentIndex()
+        if selectedIndex == 0:
+            
+            self.comboBox_2.clear()
+            self.comboBox_2.setEnabled(False)
+            self.textEdit_6.setHtml(self.howTos.sendMessage(self.howToSize))
+            
+        elif selectedIndex == 1:
+            self.textEdit_6.clear()
+            self.comboBox_2.setEnabled(True)
+            self.comboBox_2.clear()
+            soptions = [
+                "** Choose your role ",
+                "When You Are the Sender",
+                "When You Are the Receiver"
+            ]
+            self.comboBox_2.addItems(soptions)
+            self.comboBox_2.currentIndexChanged.connect(self.youAreSender)  
+            
+    def youAreSender(self):
+        selectedIndex = self.comboBox_2.currentIndex()
+        if selectedIndex == 0:
+            self.textEdit_6.clear()
+        elif selectedIndex == 1:
+            self.textEdit_6.setHtml(self.howTos.exchangePasswordSender(self.howToSize))
+        else:
+            self.textEdit_6.setHtml(self.howTos.exchangePasswordReceiver(self.howToSize))
         
 if __name__ == "__main__":
     
@@ -550,14 +613,14 @@ if __name__ == "__main__":
     if (screenWidth / screenHeight) < 1.7:
         print ("this is a funky screen size. changing UI to fit")
              
-        fwin = FunkyWindow()
-        fwin.show()
-        #win = Window()
-        #win.show()
+        #fwin = FunkyWindow()
+        #fwin.show()
+        win = Window()
+        win.show()
     else:
-        fwin = FunkyWindow()
-        fwin.show()
-        #win = Window()
-        #win.show()
+        #fwin = FunkyWindow()
+        #fwin.show()
+        win = Window()
+        win.show()
     #generate.show()
     sys.exit(app.exec())

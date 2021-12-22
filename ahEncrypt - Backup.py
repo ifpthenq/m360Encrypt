@@ -13,9 +13,8 @@ import ctypes
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPalette
 from PyQt5.QtGui import QColor
+from PyQt5.QtGui import * 
 from Labels import Labels
-from howToGuide import howToGuide
-
 from PyQt5.QtWidgets import QApplication
 
 
@@ -29,20 +28,127 @@ from PyQt5.QtWidgets import (
 from PyQt5.uic import loadUi
 
 from funky_screen_ui import Ui_MainWindow as funky_MainWindow
-
+from fw import FunkyWindow
 
 from m360Encrypt_ui import Ui_MainWindow
 #from main_window_ui import Ui_MainWindow
 from gen_keys_ui import Ui_GenKeysWindow
 from instruction_window_ui  import Ui_InstructionWindow
 
-
-
-
-
-class FunkyWindow(QMainWindow, funky_MainWindow):
+class instructionWindow(QMainWindow, Ui_InstructionWindow):
     def __init__(self, parent=None):
+       #print("dbg: init Instructions")
         super().__init__(parent)
+        self.setupUi(self)
+        self.textEdit.setText("test")
+class genKeys(QMainWindow, Ui_GenKeysWindow):
+    def __init__(self, parent):
+        #print("dbg: init genKeysWindow")
+        
+        super().__init__(parent)
+        
+        self.setupUi(self)
+        self.parenty = parent
+        #self.parenty.textEdit.setText("test")
+        self.lineEditFileLocation.setText("C:\Temp")
+        stringPath = self.lineEditFileLocation.text()
+        pathpath = '/'.join(stringPath.split('\\'))
+        self.save_folder = Path(pathpath)
+        #print("dbg: stringPath is {}".format(pathpath))
+        
+    def browseFiles(self):
+        #print("dbg: yes i do have a browsefiles()")
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.Directory)
+        #self.lineEditFileLocation = ""
+        if(dialog.exec()):
+            dir = dialog.selectedFiles()
+       
+            self.lineEditFileLocation.setText(dir[0])
+        if len(self.lineEditFileLocation.text()) == 0:
+            return None
+        stringPath = self.lineEditFileLocation.text()
+        pathpath = '/'.join(stringPath.split('\\'))
+        self.save_folder = Path(pathpath)
+        self.lineEditFileLocation.setText(str(self.save_folder))
+        #print("dbg: finished BrowseFiles and Save folder is: {} / {}".format(type(self.save_folder), self.save_folder))
+        
+        
+    def generateKeys(self): 
+        #print("dbg: now i have a generate keys()")
+        ctypes.windll.user32.MessageBoxW(0, 'This will cause the program to freeze \n for a couple of minutes' , 'Warning', 0)
+        doSaveFiles = self.checkBox.isChecked()
+        doLoadPrivateKey = self.checkBox_2.isChecked()
+        doLoadPublicKey = self.checkBox_3.isChecked()
+        doSaveSSH = self.checkBox_4.isChecked()
+        
+        filePrefix = self.filenamePrefix.text()
+        pubFile = os.path.join(self.save_folder, filePrefix + "_public_key.PEM")
+        pubSSH = os.path.join(self.save_folder, filePrefix + "_pub_id_rsa.pub")
+        privFile = os.path.join(self.save_folder, filePrefix + "_private_key.PEM")
+        #privSSH = os.path.join(self.save_folder, filePrefix + "_priv_id_rsa")
+        
+        key_pair = RSA.generate(2048)
+        #pubkey = key_pair.publickey()
+        
+        if(doSaveFiles):
+            try:
+                with open(privFile, "wb") as f:
+
+                    f.write(key_pair.exportKey('PEM'))
+                f.close()
+                
+                        
+                pubkey = key_pair.publickey()
+            
+                with open(pubFile,"wb") as f:
+                    f.write(pubkey.exportKey('PEM'))
+                f.close()
+                    
+                if(doSaveSSH):
+                    with open(pubSSH, "wb") as f2:
+                        f2.write(pubkey.exportKey('OpenSSH'))
+                    f2.close()
+             
+                ctypes.windll.user32.MessageBoxW(0, 'Successfully wrote files' , 'Files Created', 0)
+            
+            except Exception as e:
+                ctypes.windll.user32.MessageBoxW(0, str(e) , 'Error', 0)
+        
+        
+        if(doLoadPrivateKey):
+            self.parenty.textEdit.setText(key_pair.exportKey('PEM').decode())
+            
+        if(doLoadPublicKey):
+            self.parenty.textEdit_3.setText(pubkey.exportKey('PEM').decode())
+       
+        if(doLoadPublicKey or doLoadPrivateKey):
+            self.parenty.loadKeys()
+        
+        self.close()
+    def enableGenBrowseFiles(self):
+        #print("dBG: enableGenBrowseFiles")
+        if self.checkBox.isChecked():
+            self.pushButtonBrowse.setEnabled(True)
+            self.label.setEnabled(True)
+            self.lineEditFileLocation.setEnabled(True)
+            self.label_5.setEnabled(True)
+            self.filenamePrefix.setEnabled(True)
+            self.checkBox_4.setEnabled(True)
+            self.label_7.setEnabled(True)
+            
+        else:
+            self.pushButtonBrowse.setEnabled(False)
+            self.label.setEnabled(False)
+            self.lineEditFileLocation.setEnabled(False)
+            self.label_5.setEnabled(False)
+            self.filenamePrefix.setEnabled(False)
+            self.checkBox_4.setEnabled(False)
+            self.label_7.setEnabled(False)
+    
+class Window(QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(Window, self).__init__(parent)
         #call setupUi in your ui file
         self.setupUi(self) 
         #call your event handler function
@@ -55,11 +161,15 @@ class FunkyWindow(QMainWindow, funky_MainWindow):
         self.sharedPassword = "No PW Set"
         self.public_key_loaded = False
         self.private_key_loaded = False
+        #set layout
         screenWidth = GetSystemMetrics(0)
         screenHeight = GetSystemMetrics(1)
-        print("DBG: This is funky window")
-        self.labels = Labels()   
-        self.toggleDPI = 0
+        print("DBG: res: {} x {}".format(screenWidth, screenHeight))
+        if (screenWidth / screenHeight) < 1.7:
+           print("DBG: not working")
+      
+        
+            
     def connectSignalsSlots(self):
     #all of your event listeners go in here
         #self.action_Exit.triggered.connect(self.close)
@@ -394,39 +504,64 @@ class FunkyWindow(QMainWindow, funky_MainWindow):
             self.popError('Error', str(e), 0)
         #print("DBG: encryptAndSave")
     
+      
     def useHighDPI(self):
-        #print("DBG: USe High DPI")
-        self.label_15.setText(self.labels.loadKeyPairMain(8,8))
-        self.textEdit_8.setHtml(self.labels.setFaq(8, 8,6))
-        self.textEdit_5.setHtml(self.labels.setBitcoin(7.25))
-        self.label_17.setText(self.labels.setLabel17(7))
-        self.label_18.setText(self.labels.setLabel18(7))
-        self.label_3.setText(self.labels.setLabel3(7))
-        self.label_10.setText(self.labels.setLabel10(7))
-        self.label_11.setText(self.labels.setLabel11(7))
-        self.label_19.setText(self.labels.setLabel19(10, 7))
-        self.label_23.setText(self.labels.setLabel23(7))
-        self.label_33.setText(self.labels.setLabel33(7))
-        self.label_34.setText(self.labels.setLabel34(7))
-        self.toggleDPI = 1
+        print("DBG: USe High DPI")
+        
     def useLowDPI(self):
-        #print("DBG: Use Low DPI") 
-        if(self.toggleDPI):
-            #self.textEdit_5.setHtml(self.labels.loadKeyPairMain(10,10))
-            self.label_15.setText(self.labels.loadKeyPairMain(10,10))
-            self.textEdit_8.setHtml(self.labels.setFaq(10,10, 8))
-            self.textEdit_5.setHtml(self.labels.setBitcoin(8.25))
-            self.label_17.setText(self.labels.setLabel17(9))
-            self.label_18.setText(self.labels.setLabel18(9))
-            self.label_3.setText(self.labels.setLabel3(9))
-            self.label_10.setText(self.labels.setLabel10(9))
-            self.label_11.setText(self.labels.setLabel11(9))
-            self.label_19.setText(self.labels.setLabel19(12, 9))
-            self.label_23.setText(self.labels.setLabel23(9))
-            self.label_33.setText(self.labels.setLabel33(9))
-            self.label_34.setText(self.labels.setLabel34(9))
-            self.toggleDPI = 0
-        else:
-            self.useHighDPI()
-            
-       
+        print("DBG: Use Low DPI")
+        
+    
+    
+  
+        
+if __name__ == "__main__":
+    
+    
+    #os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
+    #QApplication.setAttribute(QtCore.Qt.AA_Use96Dpi)
+    #QApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
+    app = QApplication(sys.argv)
+    #app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    #app.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+    #app.setAttribute(QtCore.Qt.AA_Use96Dpi)
+    QApplication.setStyle("Fusion")
+    #
+    
+    dark_palette = QPalette()
+    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.WindowText, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.Base, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
+    dark_palette.setColor(QPalette.ToolTipText, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.Text, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ButtonText, QtCore.Qt.white)
+    dark_palette.setColor(QPalette.BrightText, QtCore.Qt.red)
+    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, QtCore.Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.WindowText, QtCore.Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.Text, QtCore.Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
+    QApplication.setPalette(dark_palette)
+    screenWidth = GetSystemMetrics(0)
+    screenHeight = GetSystemMetrics(1)
+    print("DBG: res: {} x {}".format(screenWidth, screenHeight))
+    if (screenWidth / screenHeight) < 1.7:
+        print ("this is a funky screen size. changing UI to fit")
+             
+        fwin = FunkyWindow()
+        fwin.show()
+        #win = Window()
+        #win.show()
+    else:
+        fwin = FunkyWindow()
+        fwin.show()
+        #win = Window()
+        #win.show()
+    #generate.show()
+    sys.exit(app.exec())
