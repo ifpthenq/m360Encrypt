@@ -11,12 +11,14 @@ import urllib.parse
 import base64
 import ctypes
 from PyQt5 import QtCore
+from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QPalette
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import * 
 from Labels import Labels
 from PyQt5.QtWidgets import QApplication
 from howToGuide import howToGuide
+from PyQt5.QtWidgets import QScrollArea
 
 
 from win32api import GetSystemMetrics
@@ -32,6 +34,7 @@ from funky_screen_ui import Ui_MainWindow as funky_MainWindow
 from fw import FunkyWindow
 
 from m360Encrypt_ui import Ui_MainWindow
+
 #from main_window_ui import Ui_MainWindow
 from gen_keys_ui import Ui_GenKeysWindow
 from instruction_window_ui  import Ui_InstructionWindow
@@ -55,6 +58,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         stringPath = self.lineEditFileLocation.text()
         pathpath = '/'.join(stringPath.split('\\'))
         self.save_folder = Path(pathpath)
+        self.save_folder_not_set = True
         #print("dbg: stringPath is {}".format(pathpath))
         
     def browseFiles(self):
@@ -72,6 +76,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         pathpath = '/'.join(stringPath.split('\\'))
         self.save_folder = Path(pathpath)
         self.lineEditFileLocation.setText(str(self.save_folder))
+        self.save_folder_not_set = False
         #print("dbg: finished BrowseFiles and Save folder is: {} / {}".format(type(self.save_folder), self.save_folder))
         
         
@@ -82,7 +87,10 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         doLoadPrivateKey = self.checkBox_2.isChecked()
         doLoadPublicKey = self.checkBox_3.isChecked()
         doSaveSSH = self.checkBox_4.isChecked()
-        
+        if self.save_folder_not_set:
+            stringPath = self.lineEditFileLocation.text()
+            pathpath = '/'.join(stringPath.split('\\'))
+            self.save_folder = Path(pathpath)
         filePrefix = self.filenamePrefix.text()
         pubFile = os.path.join(self.save_folder, filePrefix + "_public_key.PEM")
         pubSSH = os.path.join(self.save_folder, filePrefix + "_pub_id_rsa.pub")
@@ -126,7 +134,10 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         if(doLoadPublicKey or doLoadPrivateKey):
             self.parenty.loadKeys()
         
+        self.parenty.keyPairWindowOpen = False
         self.close()
+    def closeEvent(self, event):
+        self.parenty.keyPairWindowOpen = False
     def enableGenBrowseFiles(self):
         #print("dBG: enableGenBrowseFiles")
         if self.checkBox.isChecked():
@@ -157,6 +168,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.public_key_fname = ""
         self.private_key_fname = ""
         #self.mainAhCrypto = ahCrypto()
+        
         self.loadedPublicKey = "No Key Set"
         self.loadedPrivateKey = "No Key Set"
         self.sharedPassword = "No PW Set"
@@ -164,16 +176,118 @@ class Window(QMainWindow, Ui_MainWindow):
         self.private_key_loaded = False
         screenWidth = GetSystemMetrics(0)
         screenHeight = GetSystemMetrics(1)
-        print("DBG: This is funky window")
+        #print("DBG: This is funky window")
         self.labels = Labels() 
         self.howTos = howToGuide()
         self.howToSize = 9
         self.selectHowTo()
-        self.toggleDPI = 0
+        screenWidth = GetSystemMetrics(0)
+        screenHeight = GetSystemMetrics(1)
+   
+        if (screenWidth / screenHeight) < 1.7:
+            self.toggleDPI = 0
+        else:
+            self.toggleDPI = 1
+        self.useLowDPI()
+        buttonPalette = QPalette()
+        #buttonPalette.setColor(QPalette.Button, QColor(112, 112, 112))
+        buttonPalette.setColor(QPalette.Button, QColor(112, 102, 68))
+        self.comboBox.setPalette(buttonPalette)
+        self.pushButton.setPalette(buttonPalette)
+      
+        self.pushButton_3.setPalette(buttonPalette)
+        self.pushButton_4.setPalette(buttonPalette)
+        self.pushButton_11.setPalette(buttonPalette)
+        self.pushButton_16.setPalette(buttonPalette)
+        self.pushButton_2.setPalette(buttonPalette)
+        self.pushButton_6.setPalette(buttonPalette)
+        self.pushButton_8.setPalette(buttonPalette)
+        self.pushButton_9.setPalette(buttonPalette)
+        self.pushButton_10.setPalette(buttonPalette)
+        self.pushButton_13.setPalette(buttonPalette)
+        self.pushButton_14.setPalette(buttonPalette)
+        self.originalWindowWidth = self.width()
+        self.originalWindowHeight = self.height()
+        self.setupWidgetDict()
+        self.keyPairWindowOpen = False
+        
+    def setupWidgetDict(self):
+        self.widgetDict = { self.label : QtCore.QRect(110, 20, 181, 31),
+              self.label_2 : QtCore.QRect(110, 50, 151, 16),
+              self.tabWidget : QtCore.QRect(30, 130, 791, 661),
+              self.comboBox : QtCore.QRect(80, 20, 611, 31),
+              self.comboBox_2 : QtCore.QRect(80, 60, 611, 31),
+              self.textEdit_6 : QtCore.QRect(80, 100, 611, 521),
+              self.textEdit : QtCore.QRect(30, 150, 471, 141),
+              self.label_15 : QtCore.QRect(20, 10, 471, 81),
+              self.label_17 : QtCore.QRect(30, 100, 371, 31),
+              self.textEdit_3 : QtCore.QRect(30, 360, 471, 141),
+              self.label_18 : QtCore.QRect(30, 300, 381, 41),
+              self.pushButton : QtCore.QRect(420, 110, 75, 23),
+              self.pushButton_3 : QtCore.QRect(420, 320, 75, 23),
+              self.pushButton_4 : QtCore.QRect(360, 540, 141, 51),
+              self.label_21 : QtCore.QRect(510, 30, 21, 21),
+              self.label_22 : QtCore.QRect(510, 110, 21, 21),
+              self.label_28 : QtCore.QRect(510, 320, 21, 21),
+              self.pushButton_11 : QtCore.QRect(560, 20, 171, 41),
+              self.label_3 : QtCore.QRect(20, 20, 681, 81),
+              self.label_10 : QtCore.QRect(20, 110, 681, 31),
+              self.pushButton_2 : QtCore.QRect(20, 180, 221, 31),
+              self.label_20 : QtCore.QRect(380, 20, 21, 21),
+              self.lineEdit_3 : QtCore.QRect(20, 150, 671, 20),
+              self.textEdit_2 : QtCore.QRect(20, 220, 671, 91),
+              self.line : QtCore.QRect(20, 319, 721, 31),
+              self.label_11 : QtCore.QRect(20, 350, 681, 81),
+              self.textEdit_4 : QtCore.QRect(20, 440, 671, 91),
+              self.pushButton_6 : QtCore.QRect(20, 540, 221, 31),
+              self.lineEdit_5 : QtCore.QRect(20, 580, 671, 20),
+              self.pushButton_5 : QtCore.QRect(700, 150, 21, 21),
+              self.pushButton_7 : QtCore.QRect(700, 580, 21, 21),
+              self.label_19 : QtCore.QRect(20, 20, 681, 81),
+              self.textEdit_7 : QtCore.QRect(80, 140, 641, 421),
+              self.pushButton_8 : QtCore.QRect(140, 570, 161, 51),
+              self.pushButton_9 : QtCore.QRect(500, 570, 161, 51),
+              self.label_23 : QtCore.QRect(70, 100, 71, 20),
+              self.lineEdit_2 : QtCore.QRect(150, 100, 541, 20),
+              self.label_24 : QtCore.QRect(-310, 530, 47, 13),
+              self.pushButton_12 : QtCore.QRect(700, 100, 21, 21),
+              self.label_33 : QtCore.QRect(20, 10, 291, 101),
+              self.textEdit_9 : QtCore.QRect(20, 120, 751, 481),
+              self.label_34 : QtCore.QRect(290, 10, 91, 21),
+              self.lineEdit : QtCore.QRect(390, 10, 341, 20),
+              self.pushButton_10 : QtCore.QRect(360, 50, 91, 71),
+              self.pushButton_13 : QtCore.QRect(510, 50, 81, 71),
+              self.pushButton_14 : QtCore.QRect(660, 50, 81, 71),
+              self.pushButton_15 : QtCore.QRect(740, 10, 21, 21),
+              self.textEdit_8 : QtCore.QRect(10, 10, 771, 611),
+              self.label_4 : QtCore.QRect(30, 20, 61, 41),
+              self.textBrowser_3 : QtCore.QRect(20, 10, 81, 61),
+              self.pushButton_16 : QtCore.QRect(700, 50, 101, 71),
+              self.textEdit_5 : QtCore.QRect(330, 10, 321, 111),
+              self.label_12 : QtCore.QRect(680, 20, 151, 21),
+              self.menubar : QtCore.QRect(0, 0, 853, 21)
+        }
+
+                            
+       
+   
+    def resizeEvent(self, event):
+        #print("DBG: window resized to {} x {}".format(self.width(), self.height()))
+        windowwidth = self.width()
+        windowheight = self.height()
+        
+        widthPercentChange = (windowwidth/self.originalWindowWidth)
+        heightPercentChange = (windowheight/self.originalWindowHeight)
+        
+        for key, value in self.widgetDict.items():
+            key.setGeometry(value.x() * widthPercentChange, value.y() * heightPercentChange, value.width() * widthPercentChange, value.height() * heightPercentChange)
+       
+        
+        
     def connectSignalsSlots(self):
     #all of your event listeners go in here
         #self.action_Exit.triggered.connect(self.close)
-        print("DBG: enteredConnectSignalSlots")
+        #print("DBG: enteredConnectSignalSlots")
         #self.actionInstructions.triggered.connect(self.displayInstructions)
         #self.actionGenerate_New_Key_Pair.triggered.connect(self.genKeyPair)
        
@@ -371,8 +485,10 @@ class Window(QMainWindow, Ui_MainWindow):
     def generateKeyPair(self):
         #print("DBG: generateKeyPair")
          #self.dialog.show()
-        self.dialog = genKeys(self)
-        self.dialog.show()
+        if not self.keyPairWindowOpen:
+            self.dialog = genKeys(self)
+            self.keyPairWindowOpen = True
+            self.dialog.show()
     def selectPrivateKey(self):
         #print("DBG: selectPrivateKey")
         pkeyFile = QFileDialog.getOpenFileName(self, 'Select Private Key',
@@ -547,16 +663,23 @@ class Window(QMainWindow, Ui_MainWindow):
     def selectHowTo(self):
         soptions = []
         selectedIndex = self.comboBox.currentIndex()
+        pal = QPalette()
+        pal.setColor(QPalette.Button, QColor(53,53,53))
         if selectedIndex == 0:
             
             self.comboBox_2.clear()
             self.comboBox_2.setEnabled(False)
             self.textEdit_6.setHtml(self.howTos.sendMessage(self.howToSize))
+            self.comboBox_2.setPalette(pal)
             
         elif selectedIndex == 1:
             self.textEdit_6.clear()
             self.comboBox_2.setEnabled(True)
             self.comboBox_2.clear()
+            
+            noticePalette = QPalette()
+            noticePalette.setColor(QPalette.Button, QColor(112, 54, 79))
+            self.comboBox_2.setPalette(noticePalette)
             soptions = [
                 "** Choose your role ",
                 "When You Are the Sender",
@@ -564,7 +687,16 @@ class Window(QMainWindow, Ui_MainWindow):
             ]
             self.comboBox_2.addItems(soptions)
             self.comboBox_2.currentIndexChanged.connect(self.youAreSender)  
-            
+        elif selectedIndex == 2:
+            self.comboBox_2.clear()
+            self.comboBox_2.setEnabled(False)
+            self.comboBox_2.setPalette(pal)
+            self.textEdit_6.setHtml(self.howTos.genKeyPair(self.howToSize))
+        else:
+            self.comboBox_2.clear()
+            self.comboBox_2.setEnabled(False)
+            self.comboBox_2.setPalette(pal)
+            self.textEdit_6.setHtml(self.howTos.encryptedNotes(self.howToSize))
     def youAreSender(self):
         selectedIndex = self.comboBox_2.currentIndex()
         if selectedIndex == 0:
@@ -595,13 +727,17 @@ if __name__ == "__main__":
     dark_palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
     dark_palette.setColor(QPalette.ToolTipText, QtCore.Qt.white)
     dark_palette.setColor(QPalette.Text, QtCore.Qt.white)
-    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    #dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.Button, QColor(112, 102, 68))
     dark_palette.setColor(QPalette.ButtonText, QtCore.Qt.white)
     dark_palette.setColor(QPalette.BrightText, QtCore.Qt.red)
     dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
     dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
     dark_palette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
-    dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
+    #dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(80, 80, 80))
+    dark_palette.setColor(QPalette.Disabled, QPalette.Button, QColor(80, 80, 80))
+    dark_palette.setColor(QPalette.Inactive, QPalette.Button, QColor(80, 80, 80))
     dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, QtCore.Qt.darkGray)
     dark_palette.setColor(QPalette.Disabled, QPalette.WindowText, QtCore.Qt.darkGray)
     dark_palette.setColor(QPalette.Disabled, QPalette.Text, QtCore.Qt.darkGray)
@@ -609,7 +745,7 @@ if __name__ == "__main__":
     QApplication.setPalette(dark_palette)
     screenWidth = GetSystemMetrics(0)
     screenHeight = GetSystemMetrics(1)
-    print("DBG: res: {} x {}".format(screenWidth, screenHeight))
+    #print("DBG: res: {} x {}".format(screenWidth, screenHeight))
     if (screenWidth / screenHeight) < 1.7:
         print ("this is a funky screen size. changing UI to fit")
              

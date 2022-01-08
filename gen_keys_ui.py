@@ -106,7 +106,8 @@ class Ui_GenKeysWindow(object):
         self.label.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Where would you like to save your key files?</span></p></body></html>"))
         self.label_2.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Save my Keys as files on my hard drive</span></p></body></html>"))
         self.label_3.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Load Private Key into m360Encrypt Session</span></p></body></html>"))
-        self.label_4.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Load Public Key into m360Encrypt Session </span><br/>(For testing. In practice you have reason to load your own private key)</p></body></html>"))
+        self.label_4.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Load Public Key into m360Encrypt Session </span>\n"
+"</body></html>"))
         self.label_5.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">What name to prefix the file with?</span></p></body></html>"))
         self.label_6.setText(_translate("GenKeysWindow", "** Be patient. This takes a sec."))
-        self.label_7.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Save an SSH Format Copy<br/>   &nbsp; &nbsp; &nbsp; &nbsp; ** This will create SSH format files in <br/>          &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; addition to PEM format</span></p></body></html>"))
+        self.label_7.setText(_translate("GenKeysWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Save an SSH Format Copy<br/>   &nbsp; &nbsp; &nbsp; &nbsp; ** This will create SSH format version of <br/>         &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; the public key in  addition to PEM format</span></p></body></html>"))
