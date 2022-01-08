@@ -91,6 +91,7 @@ To commit:
    Syncing your local repo from Github
 ####################################
 >> git fetch origin --prune
+>> git pull origin master
   
 
    

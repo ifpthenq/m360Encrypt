@@ -19,6 +19,7 @@ from Labels import Labels
 from PyQt5.QtWidgets import QApplication
 from howToGuide import howToGuide
 from PyQt5.QtWidgets import QScrollArea
+import warnings
 
 
 from win32api import GetSystemMetrics
@@ -59,6 +60,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         pathpath = '/'.join(stringPath.split('\\'))
         self.save_folder = Path(pathpath)
         self.save_folder_not_set = True
+        self.setupSize()
         #print("dbg: stringPath is {}".format(pathpath))
         
     def browseFiles(self):
@@ -98,7 +100,7 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
         #privSSH = os.path.join(self.save_folder, filePrefix + "_priv_id_rsa")
         
         key_pair = RSA.generate(2048)
-        #pubkey = key_pair.publickey()
+        pubkey = key_pair.publickey()
         
         if(doSaveFiles):
             try:
@@ -158,6 +160,35 @@ class genKeys(QMainWindow, Ui_GenKeysWindow):
             self.checkBox_4.setEnabled(False)
             self.label_7.setEnabled(False)
     
+    def setupSize(self):
+        self.widgetDict = {self.lineEditFileLocation : QtCore.QRect(20, 60, 251, 20),        
+            self.pushButtonBrowse : QtCore.QRect(290, 60, 75, 23),
+            self.pushButtonGenerate : QtCore.QRect(160, 300, 75, 23),
+            self.label : QtCore.QRect(20, 40, 331, 21),
+            self.checkBox : QtCore.QRect(20, 20, 21, 17),
+            self.label_2 : QtCore.QRect(50, 20, 271, 21),
+            self.checkBox_2 : QtCore.QRect(20, 200, 16, 17),
+            self.label_3 : QtCore.QRect(60, 200, 311, 21),
+            self.checkBox_3 : QtCore.QRect(20, 260, 16, 17),
+            self.label_4 : QtCore.QRect(60, 250, 361, 31),
+            self.label_5 : QtCore.QRect(20, 90, 331, 21),
+            self.filenamePrefix : QtCore.QRect(20, 110, 251, 20),
+            self.label_6 : QtCore.QRect(130, 330, 221, 21),
+            self.checkBox_4 : QtCore.QRect(60, 140, 21, 17),
+            self.label_7 : QtCore.QRect(80, 130, 331, 61),
+            self.menubar : QtCore.QRect(0, 0, 440, 21)
+        }
+    def resizeEvent(self, event):
+        originalWidth = 440
+        originalHeight = 409
+        windowwidth = self.width()
+        windowheight = self.height()
+        widthPercentChange = (windowwidth/originalWidth)
+        heightPercentChange = (windowheight/originalHeight)
+        
+        for key, value in self.widgetDict.items():
+            key.setGeometry(value.x() * widthPercentChange, value.y() * heightPercentChange, value.width() * widthPercentChange, value.height() * heightPercentChange)
+       
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -287,7 +318,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def connectSignalsSlots(self):
     #all of your event listeners go in here
         #self.action_Exit.triggered.connect(self.close)
-        #print("DBG: enteredConnectSignalSlots")
+        print("This window is spawned by Python. Closing this window will cause m360Encrypt to close.")
         #self.actionInstructions.triggered.connect(self.displayInstructions)
         #self.actionGenerate_New_Key_Pair.triggered.connect(self.genKeyPair)
        
@@ -298,22 +329,25 @@ class Window(QMainWindow, Ui_MainWindow):
             self.popError('Error', 'Password cannot be blank', 0)
             return None
         sharedPassword = self.lineEdit_2.text()
-        if self.sharedPassword and (self.sharedPassword != "No PW set"):
-            source = self.textEdit_7.toPlainText()
-            source = base64.b64decode(source.encode("latin-1"))
-            key = self.sharedPassword.encode()
-            key = SHA256.new(key).digest()
-            IV = source[:AES.block_size]
-            decryptor = AES.new(key, AES.MODE_CBC, IV)
-            data = decryptor.decrypt(source[AES.block_size:])
-            padding = data[-1]
-            if data [-padding:] != bytes([padding]) * padding:
-                raise ValueError("Invalid Padding")
-            data = data[:-padding]
-            #decoded = base64.b64encode(data).decode("latin-1")
-            #decoded = str(data)
-            decoded = data.decode()
-            self.textEdit_7.setText(str(decoded))
+        try:
+            if self.sharedPassword and (self.sharedPassword != "No PW set"):
+                source = self.textEdit_7.toPlainText()
+                source = base64.b64decode(source.encode("latin-1"))
+                key = self.sharedPassword.encode()
+                key = SHA256.new(key).digest()
+                IV = source[:AES.block_size]
+                decryptor = AES.new(key, AES.MODE_CBC, IV)
+                data = decryptor.decrypt(source[AES.block_size:])
+                padding = data[-1]
+                if data [-padding:] != bytes([padding]) * padding:
+                    raise ValueError("Invalid Padding")
+                data = data[:-padding]
+                #decoded = base64.b64encode(data).decode("latin-1")
+                #decoded = str(data)
+                decoded = data.decode()
+                self.textEdit_7.setText(str(decoded))
+        except Exception as e:
+            self.popError('Error', 'Cannot Decrypt. This does not appear to be an encrypted message', 0)
             
     def messageEncrypt(self):
         #print("DBG: messageEncrypt()")
@@ -708,7 +742,7 @@ class Window(QMainWindow, Ui_MainWindow):
         
 if __name__ == "__main__":
     
-    
+    warnings.filterwarnings("ignore", category=DeprecationWarning) 
     #os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
     #QApplication.setAttribute(QtCore.Qt.AA_Use96Dpi)
     #QApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
