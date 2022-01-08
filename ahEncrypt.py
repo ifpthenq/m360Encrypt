@@ -328,7 +328,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if len(self.lineEdit_2.text()) < 1:
             self.popError('Error', 'Password cannot be blank', 0)
             return None
-        sharedPassword = self.lineEdit_2.text()
+        self.sharedPassword = self.lineEdit_2.text()
         try:
             if self.sharedPassword and (self.sharedPassword != "No PW set"):
                 source = self.textEdit_7.toPlainText()
@@ -347,7 +347,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 decoded = data.decode()
                 self.textEdit_7.setText(str(decoded))
         except Exception as e:
-            self.popError('Error', 'Cannot Decrypt. This does not appear to be an encrypted message', 0)
+            self.popError('Error', 'Cannot Decrypt. Either the password is wrong \n or this is not an encrypted message.', 0)
             
     def messageEncrypt(self):
         #print("DBG: messageEncrypt()")
@@ -355,7 +355,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if len(self.lineEdit_2.text()) < 1:
             self.popError('Error', 'Password cannot be blank', 0)
             return None
-        sharedPassword = self.lineEdit_2.text()
+        self.sharedPassword = self.lineEdit_2.text()
         #first check if shared password exists
         if self.sharedPassword and (self.sharedPassword != "No PW set"):
             #print("DBG: beginning encrypt message")
