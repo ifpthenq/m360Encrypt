@@ -466,6 +466,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.popError('Warning', 'Warning: No Public Key Selected', 0)
         else:
             try:
+                
                 self.public_key = RSA.importKey(pubKeyAsString)
                 #self.statuspubloaded.setText("Yes")
                 self.public_key_loaded = True

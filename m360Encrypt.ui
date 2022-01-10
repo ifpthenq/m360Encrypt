@@ -67,7 +67,7 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
@@ -143,6 +143,9 @@
         <height>141</height>
        </rect>
       </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
+      </property>
      </widget>
      <widget class="QLabel" name="label_15">
       <property name="geometry">
@@ -181,6 +184,9 @@
         <width>471</width>
         <height>141</height>
        </rect>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QLabel" name="label_18">
@@ -414,6 +420,9 @@
         <height>91</height>
        </rect>
       </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
+      </property>
       <property name="placeholderText">
        <string>Your encrypted passphrase will appear here.</string>
       </property>
@@ -458,6 +467,9 @@
         <width>671</width>
         <height>91</height>
        </rect>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
       </property>
       <property name="placeholderText">
        <string>Paste the sender's encrypted password here.</string>
